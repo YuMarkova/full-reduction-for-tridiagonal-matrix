@@ -83,20 +83,22 @@ std::vector<std::vector<double>> straight (std::vector<std::vector<double>> &P, 
     int n = P[0].size();
     int m = log(n) / log(2);
 
-    //threads_configure();
-    //#pragma omp parallel for if (m > MIN_PAR_SIZE)
+
     for (int k = 0; k < m; ++k) {
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
-        for (int i = twoPowK - 1; i < n; i += step) {
+        //threads_configure();
+        //#pragma omp parallel for if (n > MIN_PAR_SIZE)
+        for (int i = twoPowK; i <= n; i += step) {
+
             int l = i - twoPowK;
             int r = std::min(i + twoPowK, n + 1);
 
-            if (l >= 0)
-                P[l] = sum(P[l], UoverU(r - i - 1, r - l - 1, A, C, P[i]));
-            if (r < n)
-                P[r] = sum(P[r], UoverU(i - l - 1, r - l - 1, A, C, P[i]));
+            if (l > 0)
+                P[l-1] = sum(P[l-1], UoverU(r - i - 1, r - l - 1, A, C, P[i-1]));
+            if (r <= n)
+                P[r-1] = sum(P[r-1], UoverU(i - l - 1, r - l - 1, A, C, P[i-1]));
         }
     }
 
@@ -107,13 +109,13 @@ std::vector<std::vector<double>> reverse (std::vector<std::vector<double>> &P, c
     int n = P[0].size();
     int m = log(n) / log(2);
 
-//    threads_configure();
-//    #pragma omp parallel for if (m > MIN_PAR_SIZE)
     for (int k = m; k >= 0; --k) {
         //int k = m - l;
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
+        threads_configure();
+        #pragma omp parallel for if (n > MIN_PAR_SIZE)
         for (int i = twoPowK; i <= n; i += step) {
             int l = i - twoPowK;
             int r = std::min(i + twoPowK, n + 1);
