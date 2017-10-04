@@ -90,15 +90,15 @@ std::vector<std::vector<double>> straight (std::vector<std::vector<double>> &P, 
 
         //threads_configure();
         //#pragma omp parallel for if (n > MIN_PAR_SIZE)
-        for (int i = twoPowK; i <= n; i += step) {
+        for (int i = twoPowK - 1; i < n; i += step) {
 
             int l = i - twoPowK;
             int r = std::min(i + twoPowK, n + 1);
 
-            if (l > 0)
-                P[l-1] = sum(P[l-1], UoverU(r - i - 1, r - l - 1, A, C, P[i-1]));
-            if (r <= n)
-                P[r-1] = sum(P[r-1], UoverU(i - l - 1, r - l - 1, A, C, P[i-1]));
+            if (l >= 0)
+                P[l] = sum(P[l], UoverU(r - i - 1, r - l - 1, A, C, P[i]));
+            if (r < n)
+                P[r] = sum(P[r], UoverU(i - l - 1, r - l - 1, A, C, P[i]));
         }
     }
 
@@ -110,22 +110,21 @@ std::vector<std::vector<double>> reverse (std::vector<std::vector<double>> &P, c
     int m = log(n) / log(2);
 
     for (int k = m; k >= 0; --k) {
-        //int k = m - l;
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
         threads_configure();
         #pragma omp parallel for if (n > MIN_PAR_SIZE)
-        for (int i = twoPowK; i <= n; i += step) {
+        for (int i = twoPowK-1; i < n; i += step) {
             int l = i - twoPowK;
-            int r = std::min(i + twoPowK, n + 1);
+            int r = std::min(i + twoPowK, n);
 
-            P[i-1] = UUoverU(r - i - 1, i - l - 1, r - l - 1, A,  C, P[i-1]);
+            P[i] = UUoverU(r - i - 1, i - l - 1, r - l - 1, A,  C, P[i]);
 
-            if (l > 0)
-                P[i-1] = sum(P[i-1], UoverU(r - i - 1, r - l - 1, A, C, P[l-1]));
-            if (r <= n)
-                P[i-1] = sum(P[i-1], UoverU(i - l - 1, r - l - 1, A, C, P[r-1]));
+            if (l >= 0)
+                P[i] = sum(P[i], UoverU(r - i - 1, r - l - 1, A, C, P[l]));
+            if (r < n)
+                P[i] = sum(P[i], UoverU(i - l - 1, r - l - 1, A, C, P[r]));
         }
     }
 
