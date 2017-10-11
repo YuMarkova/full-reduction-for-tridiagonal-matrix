@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <omp.h>
+#include <iostream>
 #include "reduction.h"
 #include "vector_operations.h"
 
@@ -83,22 +84,31 @@ std::vector<std::vector<double>> straight (std::vector<std::vector<double>> &P, 
     int n = P[0].size();
     int m = log(n) / log(2);
 
-
     for (int k = 0; k < m; ++k) {
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
-        //threads_configure();
-        //#pragma omp parallel for if (n > MIN_PAR_SIZE)
+        threads_configure();
+        #pragma omp parallel for if (n > MIN_PAR_SIZE)
         for (int i = twoPowK - 1; i < n; i += step) {
 
             int l = i - twoPowK;
-            int r = std::min(i + twoPowK, n + 1);
 
-            if (l >= 0)
-                P[l] = sum(P[l], UoverU(r - i - 1, r - l - 1, A, C, P[i]));
-            if (r < n)
-                P[r] = sum(P[r], UoverU(i - l - 1, r - l - 1, A, C, P[i]));
+            int r = std::min(n, i + twoPowK);
+
+            if (l >= 0) {
+                std::vector<double> V;
+                V = UoverU(r - i - 1, r - l - 1, A, C, P[i]);
+                for (size_t j = 0; j < P[l].size(); ++j)
+                    P[l][j] += V[j];
+            }
+            if (r < n) {
+                std::vector<double> V;
+                V = UoverU(i - l - 1, r - l - 1, A, C, P[i]);
+                for (size_t j = 0; j < P[r].size(); ++j)
+                    P[r][j] += V[j];
+
+            }
         }
     }
 
@@ -115,7 +125,7 @@ std::vector<std::vector<double>> reverse (std::vector<std::vector<double>> &P, c
 
         threads_configure();
         #pragma omp parallel for if (n > MIN_PAR_SIZE)
-        for (int i = twoPowK-1; i < n; i += step) {
+        for (int i = twoPowK - 1; i < n; i += step) {
             int l = i - twoPowK;
             int r = std::min(i + twoPowK, n);
 

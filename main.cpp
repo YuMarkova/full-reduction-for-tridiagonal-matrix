@@ -8,19 +8,21 @@ std::vector<double> C;
 std::vector<std::vector<double>> P;
 
 
-void Init (size_t n){
-    A.clear();
-    C.clear();
+void Init (int n, double value) {
     P.clear();
-    for (size_t i = 0; i < n; ++i) {
-        A.push_back(-1);
-        C.push_back(4);
-    }
-    for (size_t i = 0; i < n; ++i){
+    for (int i = 0; i < n; ++i) {
         std::vector<double> tmp;
         for (size_t j = 0; j < n; ++j)
-            tmp.push_back(16);
+            tmp.push_back(value);
         P.push_back(tmp);
+    }
+}
+void Init (int m) {
+    A.clear();
+    C.clear();
+    for (int i = 0; i < m; ++i) {
+        A.push_back(-1);
+        C.push_back(4);
     }
 }
 
@@ -29,22 +31,24 @@ int main()
 {
     std::ifstream in("input.txt");
     std::ofstream out("test.txt");
-    size_t n;
-    std::cin >> n;
+    int bMatrixSize, bSize, value;
 
-    for (int i = 0; i < 200; i++){
+    std::cin >> bMatrixSize >> bSize >> value;
 
-        Init(n);
-        //float start1  = omp_get_wtime();
-        straight(P, A, C);
-        //float finish1 = omp_get_wtime();
+    Init(bMatrixSize);
+    Init(bSize, value);
 
-        //float start2  = omp_get_wtime();
-        reverse(P, A, C);
-        //float finish2 = omp_get_wtime();
+    float start1  = omp_get_wtime();
+    straight(P, A, C);
+//    float finish1 = omp_get_wtime();
+//    std::cout << 2 << std::endl;
+//    float start2  = omp_get_wtime();
+    reverse(P, A, C);
+    float finish2 = omp_get_wtime();
 
-        out << P << '\n';
-    }
+    std::cout << finish2 - start1 << std::endl;
+//    std::cout << finish2 - start2 << std::endl;
+    out << P << '\n';
 
     in.close();
     out.close();
