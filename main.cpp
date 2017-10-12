@@ -17,7 +17,7 @@ void Init (size_t n, size_t m, double value) {
         P.push_back(tmp);
     }
 }
-void Init (size_t m) {
+void InitTridMatrix (size_t m) {
     A.clear();
     C.clear();
     for (size_t i = 0; i < m; ++i) {
@@ -36,7 +36,7 @@ int main()
 
     std::cin >> bMatrixSize >> bSize;
 
-    Init(bSize);
+    InitTridMatrix(bSize);
     Init(bMatrixSize, bSize, value);
 
     float start1  = omp_get_wtime();
@@ -49,7 +49,7 @@ int main()
 
     std::cout << finish2 - start1 << std::endl;
 //    std::cout << finish2 - start2 << std::endl;
-    out << P << '\n';
+    //out << P << '\n';
 
     in.close();
     out.close();

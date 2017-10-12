@@ -42,7 +42,7 @@ std::vector<double> Sweeping (const std::vector<double> &A,
     return X;
 }
 
-std::vector<double> UoverU(const int k, const int n, const std::vector<double> &A, const std::vector<double> &C, const std::vector<double> &F)
+std::vector<double> UoverU(int k, int n, const std::vector<double> &A, const std::vector<double> &C, const std::vector<double> &F)
 {
     std::vector<double> R;
     for (int i = 0; i < F.size(); ++i)
@@ -87,8 +87,8 @@ void straight (std::vector<std::vector<double>> &P, const std::vector<double> &A
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
-        threads_configure();
-        #pragma omp parallel for if (n > MIN_PAR_SIZE)
+        //threads_configure();
+        //#pragma omp parallel for if (n > MIN_PAR_SIZE)
         for (int i = twoPowK - 1; i < n; i += step) {
 
             int l = i - twoPowK;
@@ -97,19 +97,19 @@ void straight (std::vector<std::vector<double>> &P, const std::vector<double> &A
 
             if (l >= 0) {
                 std::vector<double> V = UoverU(r - i - 1, r - l - 1, A, C, P[i]);
-                for (int j = 0; j < P[l].size(); ++j)
+                size_t N = P[l].size();
+                for (size_t j = 0; j < N; ++j)
                     P[l][j] += V[j];
             }
             if (r < n) {
                 std::vector<double> V = UoverU(i - l - 1, r - l - 1, A, C, P[i]);
-                for (int j = 0; j < P[r].size(); ++j)
+                size_t N = P[r].size();
+                for (size_t j = 0; j < N; ++j)
                     P[r][j] += V[j];
 
             }
         }
     }
-
-    return;
 }
 
 
@@ -121,8 +121,9 @@ void reverse (std::vector<std::vector<double>> &P, const std::vector<double> &A,
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
-        threads_configure();
-        #pragma omp parallel for if (n > MIN_PAR_SIZE)
+        //threads_configure();
+        //#pragma omp parallel for if (n > MIN_PAR_SIZE)
+
         for (int i = twoPowK - 1; i < n; i += step) {
             int l = i - twoPowK;
             int r = std::min(i + twoPowK, n);
@@ -131,16 +132,18 @@ void reverse (std::vector<std::vector<double>> &P, const std::vector<double> &A,
 
             if (l >= 0) {
                 std::vector<double> V =  UoverU(r - i - 1, r - l - 1, A, C, P[l]);
-                for (int j = 0; j < P[i].size(); ++j)
+                size_t N = P[i].size();
+                for (size_t j = 0; j < N; ++j)
                     P[i][j] += V[j];
             }
+
             if (r < n) {
                 std::vector<double> V = UoverU(i - l - 1, r - l - 1, A, C, P[r]);
-                for (int j = 0; j < P[i].size(); ++j)
+                size_t N = P[i].size();
+                for (size_t j = 0; j < N; ++j)
                     P[i][j] += V[j];
             }
-        }
-    }
 
-    return;
+        } //for (int i = twoPowK - 1; i < n; i += step)
+    } //for (int k = m; k >= 0; --k)
 }
