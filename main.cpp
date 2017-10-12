@@ -8,19 +8,19 @@ std::vector<double> C;
 std::vector<std::vector<double>> P;
 
 
-void Init (int n, double value) {
+void Init (size_t n, size_t m, double value) {
     P.clear();
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         std::vector<double> tmp;
-        for (size_t j = 0; j < n; ++j)
+        for (size_t j = 0; j < m; ++j)
             tmp.push_back(value);
         P.push_back(tmp);
     }
 }
-void Init (int m) {
+void Init (size_t m) {
     A.clear();
     C.clear();
-    for (int i = 0; i < m; ++i) {
+    for (size_t i = 0; i < m; ++i) {
         A.push_back(-1);
         C.push_back(4);
     }
@@ -31,12 +31,13 @@ int main()
 {
     std::ifstream in("input.txt");
     std::ofstream out("test.txt");
-    int bMatrixSize, bSize, value;
+    size_t bMatrixSize, bSize;
+    double value = 16;
 
-    std::cin >> bMatrixSize >> bSize >> value;
+    std::cin >> bMatrixSize >> bSize;
 
-    Init(bMatrixSize);
-    Init(bSize, value);
+    Init(bSize);
+    Init(bMatrixSize, bSize, value);
 
     float start1  = omp_get_wtime();
     straight(P, A, C);
