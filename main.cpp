@@ -32,7 +32,7 @@ int main()
     std::ifstream in("input.txt");
     std::ofstream out("test.txt");
     size_t bMatrixSize, bSize;
-    double value = 16;
+    double value = 100;
 
     std::cin >> bMatrixSize >> bSize;
 
