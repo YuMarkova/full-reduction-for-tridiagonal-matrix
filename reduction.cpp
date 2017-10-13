@@ -82,12 +82,12 @@ void straight (std::vector<std::vector<double>> &P, const std::vector<double> &A
 {
     int n = P.size();
     int m = log(n) / log(2);
+    threads_configure();
 
     for (int k = 0; k < m; ++k) {
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
-        threads_configure();
         #pragma omp parallel for if (n > MIN_PAR_SIZE)
         for (int i = twoPowK - 1; i < n; i += step) {
 
@@ -116,12 +116,12 @@ void straight (std::vector<std::vector<double>> &P, const std::vector<double> &A
 void reverse (std::vector<std::vector<double>> &P, const std::vector<double> &A, const std::vector<double> &C) {
     int n = P.size();
     int m = log(n) / log(2);
+    threads_configure();
 
     for (int k = m; k >= 0; --k) {
         int twoPowK = pow(2, k);
         int step = pow(2, k + 1);
 
-        threads_configure();
         #pragma omp parallel for if (n > MIN_PAR_SIZE)
 
         for (int i = twoPowK - 1; i < n; i += step) {
